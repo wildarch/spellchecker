@@ -1,4 +1,5 @@
 import java.util.Map;
+import java.util.Map.Entry;
 
 public class SpellCorrector {
     final private CorpusReader cr;
@@ -21,7 +22,9 @@ public class SpellCorrector {
         String finalSuggestion = "";
         
         //TODO correctPhrase
-        /** CODE TO BE ADDED **/
+        for (String word : words) {
+            finalSuggestion += getBestCandidateWord(word) + " ";
+        }
         
         return finalSuggestion.trim();
     }    
@@ -30,5 +33,23 @@ public class SpellCorrector {
     public Map<String,Double> getCandidateWords(String typo)
     {
         return new WordGenerator(cr,cmr).getCandidateCorrections(typo);
-    }            
+    }
+    
+    /** Returns the best candidate word from getCandidateWords. **/
+    public String getBestCandidateWord(String word) {
+        // TODO what happens if there are no candidate words? 
+        // return word itself?
+        Entry<String, Double> best = null;
+        for (Entry<String, Double> e : getCandidateWords(word).entrySet()) {
+            if (best == null || e.getValue() > best.getValue()) {
+                best = e;
+            }
+        }
+        if (best == null) {
+            return word;
+        }
+        else {
+            return best.getKey();
+        }
+    }
 }
