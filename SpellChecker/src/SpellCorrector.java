@@ -20,6 +20,7 @@ public class SpellCorrector {
         String[] words = phrase.split(" ");
         String finalSuggestion = "";
         
+        //TODO correctPhrase
         /** CODE TO BE ADDED **/
         
         return finalSuggestion.trim();

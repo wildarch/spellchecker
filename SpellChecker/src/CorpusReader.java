@@ -114,6 +114,7 @@ public class CorpusReader
         
         double smoothedCount = 0.0;
         
+        //TODO SmoothedCount
         /** ADD CODE HERE **/  
         
         return smoothedCount;        

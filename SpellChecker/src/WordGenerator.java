@@ -21,7 +21,7 @@ public class WordGenerator {
      * @return conditional probability Pr(t|c)
      */
     private double probability(String t, String c) {
-        // ToDo SpellChecker Assignment: Implement this!
+        // TODO SpellChecker Assignment: Implement this!
         return 1.0;
     }
     
