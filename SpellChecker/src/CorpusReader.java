@@ -159,8 +159,8 @@ public class CorpusReader
         
         double smoothedCount = 0.0;
         
-        /** ADD CODE HERE **/  
+        smoothedCount = getNGramCount(NGram) + 1;
         
-        return smoothedCount;        
+        return smoothedCount;
     }
 }

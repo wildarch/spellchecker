@@ -26,7 +26,7 @@ public class WordGenerator {
         if (cfc == 0) {
             return 0;
         }
-        return cfc / (double) cmr.getTotalCount(t);
+        return cfc / (double) cmr.getTotalCount(c);
     }
     
     protected void addInsertions(HashMap<String, Double> result, String typo) {
