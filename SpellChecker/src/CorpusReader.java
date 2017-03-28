@@ -26,6 +26,11 @@ public class CorpusReader
         readVocabulary();
     }
     
+    @Deprecated
+    public int BiCharCount(String xy) {
+        return biChars.getOrDefault(xy, 0);
+    }
+    
     /**
      * Returns the n-gram count of <NGram> in the corpus
      * 
