@@ -26,7 +26,8 @@ public class WordGenerator {
         if (cfc == 0) {
             return 0;
         }
-        return cfc / (double) cmr.getTotalCount(c);
+        
+        return cfc / (double) cr.BiCharCount(c);
     }
     
     protected void addInsertions(HashMap<String, Double> result, String typo) {

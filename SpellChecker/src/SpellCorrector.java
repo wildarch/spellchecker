@@ -26,33 +26,13 @@ public class SpellCorrector {
         String finalSuggestion = "";
         
         // TODO    
-        finalSuggestion = words[0] + " ";
-        for (int i = 1; i < words.length; i++) {
+        //finalSuggestion = words[0] + " ";
+        for (int i = 0; i < words.length; i++) {
             String word = words[i];
             Map<String,Double> candidates = getCandidateWords(word);
             if (cr.inVocabulary(word)) {
                 candidates.put(word, NO_ERROR);
             }
-            /*
-            for(Entry<String, Double> e : candidates.entrySet()) {
-                e.setValue(e.getValue() + wordProbability(e.getKey()));
-            }
-            
-            
-            if (i > 0) {
-                for (Entry<String, Double> e : candidates.entrySet()) {
-                    System.out.println(words[i-1] + " " + e.getKey() + ": " + cr.getSmoothedCount(words[i-1] + " " + e.getKey()));
-                    e.setValue(
-                        cr.getSmoothedCount(words[i-1] + " " + e.getKey()) + 
-                            e.getValue()
-                    );
-                }
-            }
-            
-            words[i] = candidates.entrySet().stream()
-                .max((o1, o2) -> o1.getValue().compareTo(o2.getValue()))
-                .get().getKey();
-            */
             for (Entry<String, Double> e : candidates.entrySet()) {
                 String candidate = e.getKey();
                 Probability p = new Probability(
@@ -62,16 +42,13 @@ public class SpellCorrector {
                     (i > 0)? words[i-1] : null, 
                     (i > 0)? cr.getSmoothedCount(words[i-1] + " " + candidate) : 1
                 );
-                System.out.println(p + "Prob: " + p.probability(LAMBDA));
+                //if (!SpellChecker.inPeach) System.out.println(p + "Prob: " + p.probability(LAMBDA));
                 e.setValue(p.probability(LAMBDA));
             }
             words[i] = candidates.entrySet().stream()
                 .max((o1, o2) -> o1.getValue().compareTo(o2.getValue()))
                 .get().getKey();
             finalSuggestion += words[i] + " ";
-            
-            System.out.println("Word: "+word+". Candidates:");
-            //candidates.entrySet().forEach((e) -> System.out.println(e));
         }
         return finalSuggestion.trim();
     }    

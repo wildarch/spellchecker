@@ -3,12 +3,13 @@ import java.util.Scanner;
 
 public class SpellChecker {
 
+    public static boolean inPeach = false; // set this to true if you submit to peach!!!
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) 
     {
-        boolean inPeach = false; // set this to true if you submit to peach!!!
         
         try {
             CorpusReader cr = new CorpusReader();
@@ -28,6 +29,8 @@ public class SpellChecker {
     static void nonPeachTest(SpellCorrector sc) throws IOException { 
             String[] sentences = {
                 "at the hme locations there were traces of water",
+                "this assay allowed us to measure a wide variety of conditions",
+                "the development of diabetes is present in mice that carry a transgene"
             };
             
             for(String sentence: sentences) {
