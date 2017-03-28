@@ -34,6 +34,12 @@ public class ConfusionMatrixReader {
         return confusionMatrix.getOrDefault(error+"|"+correct,0);
     }
     
+    // TODO should not be necessary
+    @Deprecated
+    public int getTotalCount(String s) {
+        return countMatrix.getOrDefault(s, 1);
+    }
+    
     private void readConfusionMatrix() 
             throws FileNotFoundException, IOException
     {

@@ -14,6 +14,11 @@ public class CorpusReader
     
     private HashMap<String,Integer> ngrams;
     private Set<String> vocabulary;
+    private HashMap<String, Integer> biChars;  // keeps count of occurences of two characters xy in the whole corpus
+    private int corpusSize;
+    private int biGramCount;
+    private HashMap<String,Integer> biGram2; // count 2nd word in biGram
+    private HashMap<String,Integer> biGram1; // count first word in biGram
         
     public CorpusReader() throws IOException
     {  
@@ -27,7 +32,7 @@ public class CorpusReader
      * @param nGram : space-separated list of words, e.g. "adopted by him"
      * @return count of <NGram> in corpus
      */
-     public int getNGramCount(String nGram) throws  NumberFormatException
+     public int getNGramCount(String nGram) throws  IllegalArgumentException
     {
         if(nGram == null || nGram.length() == 0)
         {
@@ -40,6 +45,11 @@ public class CorpusReader
             FileNotFoundException, IOException, NumberFormatException
     {
         ngrams = new HashMap<>();
+        biChars = new HashMap<>();
+        biGram1 = new HashMap<>();
+        biGram2 = new HashMap<>();
+        corpusSize=0;
+        biGramCount = 0;
 
         FileInputStream fis;
         fis = new FileInputStream(CNTFILE_LOC);
@@ -47,22 +57,43 @@ public class CorpusReader
 
         while (in.ready()) {
             String phrase = in.readLine().trim();
-            String s1, s2;
             int j = phrase.indexOf(" ");
-
-            s1 = phrase.substring(0, j);
-            s2 = phrase.substring(j + 1, phrase.length());
-
-            int count = 0;
+            String s1 = phrase.substring(0, j);
+            String s2 = phrase.substring(j + 1, phrase.length());
+            
             try {
-                count = Integer.parseInt(s1);
+                int count = Integer.parseInt(s1);
                 ngrams.put(s2, count);
+                if (!s2.contains(" ")) { // unigram
+                    corpusSize += count;
+                    addBiChars(s2,count);
+                } else {
+                    int space = s2.indexOf(' ');
+                    String w1 = s2.substring(0,space);
+                    String w2 = s2.substring(space+1);
+                    
+                    biGram1.put(w1, biGram1.getOrDefault(w1, 0)+1);
+                    biGram2.put(w2, biGram2.getOrDefault(w2, 0)+1);
+                    
+                    biGramCount++;
+                }
             } catch (NumberFormatException nfe) {
                 throw new NumberFormatException("NumberformatError: " + s1);
             }
         }
     }
     
+    private void addBiChars(String word, int count) {
+        word = " "+word;
+        for(int i=0;i<word.length();i++) {
+            if (i<word.length()-1) {
+                String bichar = word.substring(i,i+2);
+                biChars.put(bichar, count + biChars.getOrDefault(bichar,0));
+            }
+            String uniChar = word.substring(i,i+1);
+            biChars.put(uniChar, count + biChars.getOrDefault(uniChar,0));
+        }
+    }
     
     private void readVocabulary() throws FileNotFoundException, IOException {
         vocabulary = new HashSet<>();
@@ -78,9 +109,9 @@ public class CorpusReader
     }
     
     /**
-     * Returns the size of the number of unique words in the corpus
+     * Returns the number of unique words in the corpus
      * 
-     * @return the size of the number of unique words in the corpus
+     * @return the number of unique words in the corpus
      */
     public int getVocabularySize() 
     {
@@ -88,10 +119,19 @@ public class CorpusReader
     }
     
     /**
-     * Returns the subset of words in set that are in the vocabulary
+     * Returns the number of words in the corpus.
+     * This is counted using the sum of all unigram counts.
+     */
+    public int getCorpusSize() 
+    {
+        return corpusSize;
+    }
+       
+    /**
+     * Returns a subset of words in set that are also in the vocabulary
      * 
      * @param set
-     * @return 
+     * @return intersection of set and vocabulary
      */
     public HashSet<String> inVocabulary(Set<String> set) 
     {
@@ -100,6 +140,11 @@ public class CorpusReader
         return h;
     }
     
+    /**
+     * Returns whether or not word appears in the vocabulary.
+     * @param word
+     * @return 
+     */
     public boolean inVocabulary(String word) 
     {
        return vocabulary.contains(word);
@@ -114,7 +159,6 @@ public class CorpusReader
         
         double smoothedCount = 0.0;
         
-        //TODO SmoothedCount
         /** ADD CODE HERE **/  
         
         return smoothedCount;        

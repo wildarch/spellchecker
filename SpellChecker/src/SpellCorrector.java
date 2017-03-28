@@ -21,10 +21,8 @@ public class SpellCorrector {
         String[] words = phrase.split(" ");
         String finalSuggestion = "";
         
-        //TODO correctPhrase
-        for (String word : words) {
-            finalSuggestion += getBestCandidateWord(word) + " ";
-        }
+        // TODO
+        
         
         return finalSuggestion.trim();
     }    
