@@ -7,7 +7,7 @@ public class SpellCorrector {
     final private ConfusionMatrixReader cmr;
     
     final private static double NO_ERROR = 0.90;
-    final private static double LAMBDA = 0.5;
+    final private static double LAMBDA = 2.5;
     
     public SpellCorrector(CorpusReader cr, ConfusionMatrixReader cmr) 
     {

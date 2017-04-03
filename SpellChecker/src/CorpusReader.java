@@ -3,8 +3,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class CorpusReader 
@@ -19,6 +21,10 @@ public class CorpusReader
     private int biGramCount;
     private HashMap<String,Integer> biGram2; // count 2nd word in biGram
     private HashMap<String,Integer> biGram1; // count first word in biGram
+    
+    private List<String[]> biGrams;
+    
+    private final static double DELTA = 0.75;
         
     public CorpusReader() throws IOException
     {  
@@ -157,15 +163,35 @@ public class CorpusReader
     
     public double getSmoothedCount(String NGram)
     {
-        if(NGram == null || NGram.length() == 0)
+        if(NGram == null || NGram.length() == 0 || !NGram.contains(" "))
         {
-            throw new IllegalArgumentException("NGram must be non-empty.");
+            throw new IllegalArgumentException("NGram must be non-empty bigram.");
         }
         
         double smoothedCount = 0.0;
         
-        smoothedCount = getNGramCount(NGram) + 1;
+        // Add one smoothing
+        //smoothedCount = getNGramCount(NGram) + 1;
+        String[] parts = NGram.split(" ");
+        String v = parts[0];
+        String w = parts[1];
         
-        return smoothedCount;
+        smoothedCount += Math.max(getNGramCount(NGram) - DELTA, 0);
+        smoothedCount /= biGram1.get(v);
+        smoothedCount += lambda(v) * unigramProbability(w);
+        //System.out.println(smoothedCount);
+        
+        return smoothedCount * 1000;
+    }
+    
+    private double lambda(String v) {
+        int uniqueCombinations = biGram1.getOrDefault(v, 0);
+        return DELTA / biGram1.get(v) * uniqueCombinations;
+    }
+    
+    private double unigramProbability(String w) {
+        int totalUniqueBiGrams = biGramCount;
+        int uniqueBiGrams = biGram2.getOrDefault(w, 0);
+        return (double) uniqueBiGrams / totalUniqueBiGrams;
     }
 }
