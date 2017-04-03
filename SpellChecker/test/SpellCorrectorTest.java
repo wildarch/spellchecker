@@ -4,7 +4,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.Before;
 
 /**
  *
@@ -32,18 +31,51 @@ public class SpellCorrectorTest {
         "the development of idabetes is present in mice that carry a transgene",
         "the development of diabetes us present in mice that harry a transgene"
     };
+    
+    public String[] testPhrases4 = new String[] {
+        "boxing gloves shield the knuckles not the head",
+        "boxing loves shield the knuckles nots the head",
+        "boing gloves shield the knuckles nut the head",
+    };
+    
+    public String[] testPhrases6 = new String[] {
+        "she still refers to me as a friend but i feel i am treated quite badly",
+        "she still refers to me as a fiend but i feel i am treated quite badly",
+        "she still refers to me has a friend but i fel i am treated quite badly",
+        "she still refers to me as a friendd but i feel i am traeted quite badly",
+    };
+    
+    public String[] testPhrases7 = new String[] {
+        "a response may be any measurable biological parameter that is correlated with the toxicant",
+        "a responses may be any measurable biological parameter that is correlated with the toxicant"
+    };
+    
+    public String[] testPhrases8 = new String[] {
+        "essentially there has been no change in japan",
+        "essentially here has bien no change in japan",
+    };
+    
+    public String[] testPhrases9 = new String[] {
+        "ancient china was one of the longest lasting societies in the history of the world",
+        "ancient china was one of the longst lasting societies iin the history of the world"
+    };
+    
+    public String[] testPhrases10 = new String[] {
+        "playing in the national football league was my dream",
+        "laying in the national footbal league was my dream"
+    };
+    
 
     /**
      * Test of correctPhrase method, of class SpellCorrector.
      */
-    @Test
-    public void testCorrectPhrase1() {
+    private void testCorrectPhrase(String[] phrases) {
         try {
             CorpusReader cr = new CorpusReader();
             ConfusionMatrixReader cmr = new ConfusionMatrixReader();
             SpellCorrector sc = new SpellCorrector(cr, cmr);
-            for(String s : testPhrases1) {
-                assertEquals(testPhrases1[0], sc.correctPhrase(s));
+            for(String s : phrases) {
+                assertEquals(phrases[0], sc.correctPhrase(s));
             }
         } catch (IOException ex) {
             Logger.getLogger(SpellCorrectorTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -51,31 +83,55 @@ public class SpellCorrectorTest {
     }
     
     @Test
-    public void testCorrectPhrase2() {
-        try {
-            CorpusReader cr = new CorpusReader();
-            ConfusionMatrixReader cmr = new ConfusionMatrixReader();
-            SpellCorrector sc = new SpellCorrector(cr, cmr);
-            for(String s : testPhrases2) {
-                assertEquals(sc.correctPhrase(s), testPhrases2[0]);
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(SpellCorrectorTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void test1() {
+        testCorrectPhrase(testPhrases1);
     }
     
     @Test
-    public void testCorrectPhrase3() {
-        try {
-            CorpusReader cr = new CorpusReader();
-            ConfusionMatrixReader cmr = new ConfusionMatrixReader();
-            SpellCorrector sc = new SpellCorrector(cr, cmr);
-            for(String s : testPhrases3) {
-                assertEquals(testPhrases3[0], sc.correctPhrase(s));
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(SpellCorrectorTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public void test2() {
+        testCorrectPhrase(testPhrases2);
+    }
+    
+    @Test
+    public void test3() {
+        testCorrectPhrase(testPhrases3);
+    }
+    
+    @Test
+    public void test4() {
+        testCorrectPhrase(testPhrases4);
+    }
+    
+    /*
+    @Test
+    public void test5() {
+        testCorrectPhrase(testPhrases5);
+    }
+    */
+
+    @Test
+    public void test6() {
+        testCorrectPhrase(testPhrases6);
+    }
+    
+    @Test
+    public void test7() {
+        testCorrectPhrase(testPhrases7);
+    }
+    
+    @Test
+    public void test8() {
+        testCorrectPhrase(testPhrases8);
+    }
+    
+    @Test
+    public void test9() {
+        testCorrectPhrase(testPhrases9);
+    }
+    
+    @Test
+    public void test10() {
+        testCorrectPhrase(testPhrases10);
     }
 
 }
