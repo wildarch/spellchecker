@@ -48,11 +48,7 @@ public class SpellCorrector {
             }
             if (hasNext) {
                 next = words[i+1];
-<<<<<<< HEAD
                 if (!cr.inVocabulary(next)) { //2 consecutive errors not allowed
-=======
-                if (!cr.inVocabulary(next)) {
->>>>>>> 77c06be64a30edd18b447f62da5093ef66c0ef8a
                     words[i] = word;
                     continue;
                 }
