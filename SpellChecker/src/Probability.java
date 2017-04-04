@@ -28,6 +28,6 @@ public class Probability {
     }
     
     public double probability(double lambda) {
-        return typoProbability * Math.pow(wordProbability, lambda) * smoothedCount;
+        return typoProbability * Math.pow(wordProbability * smoothedCount, lambda);
     }
 }
