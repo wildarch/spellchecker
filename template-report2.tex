@@ -48,6 +48,11 @@ String Spellchecker(phrase) {
 		if (word is in vocabulary) {
 			add word to candidateWords, typo probability for word is NO_ERROR;
 		}
+		if (right neighbour of word is not in vocabulary) {
+			bestWord = word;
+			add bestWord to correctPhrase;
+			continue;
+		}
 		for (every candidateWord in candidateWords) {
 			candidateWord.probability = probability of typo 
 					* (probability candidateWord occuring)^LAMBDA 
@@ -141,15 +146,13 @@ a value/probability to a candidate sentence. Also describe what type
 of smoothing you use and how you have implemented it.}
 
 \section{Results and evaluation}
-
-\textbf{Allebei}
-
-\emph{Provide an overall assessment of your programs. What type of
-errors is it good at to catch and repair, which type or errors are
-missed or wrongly repaired. Explain what could be done, in principle,
-to improve your program. Discuss how you have calibrated the relevant
-parameters.}
-
+Our implementation corrects 31 out of 33 test cases of the training set, and 39 of the final set.
+The two failed test cases are:
+\begin{enumerate}
+\item "\textbf{boing} gloves shield the knuckles \textbf{nut} the head", corrected as "boxing gloves shield the knuckles \textbf{but} the head", where "but" should have been corrected as "not". This error is hard to catch, as it requires the spellchecker to use higher order ngrams. The spellchecker simply compairs the probability of "knuckles but the" with "knuckles not the", and in this slim context the spellchecker is unable to choose the right correction. According to the confusion matrix "not" is also confused with  "nut" more often than "but".
+\item "\textbf{laying} in the national footbal league was my dream" is unchanged by the spellchecker, where it should have corrected "laying" to  "playing". But also in this case a higher order ngrams or semantic analysis would be necessary. "laying in" is a very common bigram, so there is no reason for the spell checker to correct this.
+\end{enumerate}
+Given how  hard it is to correct these errors, we are very satisfied with the performance of our spellchecker.
 \section{Advanced enhancements}
 
 In order to enhance the performance of our spell checker, we added a few features to its word-deciding process. \\ \\ The spellchecker works from left to right, so while correcting words, its right neighbour has not been corrected yet. We simply check if this right neighbour is in the vocabulary: If not, this means it has to be corrected. Since we know that there are never 2 consecutive words with a spelling error, this implies the word currently being checked is already correct, and thus we conclude this and stop trying to find an alternative word. \\ \\
