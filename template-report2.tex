@@ -66,8 +66,6 @@ your spell checker.}
 
 \section{Phrase generation and evaluation}
 
-\section{Phrase generation and evaluation}
-
 \textbf{Daan}
 
 During phrase generation we find the best suggestion for a given phrase. A suggestion is generated word by word from left to right, using the previous word in the phrase if available to create bi-grams. For each word in the phrase we calculate the probability that it is the correct suggestion. This probability is calculated in three stages:
@@ -96,8 +94,9 @@ $P(t|c)$ and $P(w_c)$ together determine the noisy channel model probability $nc
 \[
 ncp(w_c) = P(t|c) \cdot P(w_c)^\lambda
 \]
-Here $\lambda$ is a calibration variable that we tuned by hand using the training set
+Here $\lambda$ is a calibration variable that we tuned by hand using the training set.
 
+\subsection{}
 
 
 \emph{Give a full discussion of how you have implemented phrase generation
