@@ -48,11 +48,6 @@ String Spellchecker(phrase) {
 		if (word is in vocabulary) {
 			add word to candidateWords, typo probability for word is NO_ERROR;
 		}
-		if (right neighbour of word is not in vocabulary) {
-			bestWord = word;
-			add bestWord to correctPhrase;
-			continue;
-		}
 		for (every candidateWord in candidateWords) {
 			candidateWord.probability = probability of typo 
 					* (probability candidateWord occuring)^LAMBDA 
