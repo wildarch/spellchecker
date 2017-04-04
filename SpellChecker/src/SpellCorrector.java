@@ -6,8 +6,8 @@ public class SpellCorrector {
     final private CorpusReader cr;
     final private ConfusionMatrixReader cmr;
     
-    final private static double NO_ERROR = 0.9;
-    final private static double LAMBDA = 2.5;
+    final private static double NO_ERROR = 0.8;
+    final private static double LAMBDA = 0.3;
     
     public SpellCorrector(CorpusReader cr, ConfusionMatrixReader cmr) 
     {
@@ -48,6 +48,10 @@ public class SpellCorrector {
             }
             if (hasNext) {
                 next = words[i+1];
+                if (!cr.inVocabulary(next)) { //2 consecutive errors not allowed
+                    words[i] = word;
+                    continue;
+                }
             }
 
             Map<String,Double> candidates = getCandidateWords(word);
@@ -55,6 +59,9 @@ public class SpellCorrector {
                 candidates.put(word, NO_ERROR);
             }
             for (Entry<String, Double> e : candidates.entrySet()) {
+                if (e.getValue() == 0.0) {
+                    e.setValue(0.00001);
+                }
                 String candidate = e.getKey();
                 String comboPrevious = null;
                 String comboNext = null;
