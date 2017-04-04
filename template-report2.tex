@@ -39,7 +39,7 @@ In this project we explore the creation of a spell checker, used for correcting 
 
 \section{Overall approach }
 
-To correct a sentence, our approach was to go through all the words in the sentence and find the best possible word in this place. We do this by generating a candidate set of words: we create this by taking all words with a Levenshtein Distance of 1 (giving insertions, deletions and substitutions a count of 1). If the word is also in the vocabulary (and thus a valid word), we also add this to the candidate set. We then check for the probability of the type of every word in the candidate set (and a constant for no typos), how common the word is, and how well it fits while looking at its 'neighbour' words. This gives us the following algorithm:
+To correct a sentence, our approach was to go through all the words in the sentence and find the best possible word in this place. We do this by generating a candidate set of words: we create this by taking all words with a Levenshtein Distance of 1 (giving insertions, deletions and substitutions a weight of 1). If the word is also in the vocabulary (and thus a valid word), we also add this to the candidate set. We then check for the probability of the typo of every word in the candidate set (and a constant for no typos), how common the word is, and how well it fits by looking at its 'neighbour' words. This gives us the following algorithm:
 \begin{algorithm}[h]
 \begin{lstlisting}[language=Java,numbers=left,numberstyle={\footnotesize},stepnumber=2,basicstyle={\scriptsize},tabsize=4]
 String Spellchecker(phrase) {
@@ -50,8 +50,8 @@ String Spellchecker(phrase) {
 			add word to candidateWords;
 		}
 		for (every candidateWord in candidateWords) {
-			candidateWord.probability = probability of type * probability word occuring 
-										* probability of word occuring before/after neighbours;
+			candidateWord.probability = probability of typo * probability word occuring 
+										* probability of word occuring before/after its neighbours;
 		}
 		bestWord = word from candidateWords with the highest probability
 		add bestWord to correctPhrase;
