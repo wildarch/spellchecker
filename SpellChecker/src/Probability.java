@@ -32,7 +32,6 @@ public class Probability {
     }
     
     public double probability(double lambda) {
-        //double kneserNey = smoothedCountPrevious
-        return typoProbability * Math.pow(wordProbability * smoothedCountPrevious * smoothedCountNext, lambda);
+        return (-1.0 / Math.log(typoProbability*0.8)) * Math.pow(wordProbability, lambda) * smoothedCountPrevious * smoothedCountNext;
     }
 }

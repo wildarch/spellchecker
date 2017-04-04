@@ -185,12 +185,15 @@ public class CorpusReader
         smoothedCount += Math.max(getNGramCount(NGram) - DELTA, 0);
         
         Integer biGramStartCount = biGram1.get(v);
+        if (biGramStartCount == null) {
+            return 0.0;
+        }
 
         smoothedCount /= biGramStartCount;
         
         smoothedCount += lambda(v) * getSmoothedCount(w);
         
-        return smoothedCount;
+        return smoothedCount * 1000;
     }
     
     private double lambda(String v) {
