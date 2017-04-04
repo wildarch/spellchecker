@@ -22,10 +22,12 @@
 \title{2ID90 Spell Checker Assignment\\
 \emph{template report} }
 
-\author{Group XY: <name of author1>, <name of author2>}
+\author{Group 19: Daan de Graaf, Yoeri Poels}
 \maketitle
 
 \section{Introduction}
+
+\textbf{Yoeri}
 
 \emph{Give a short introduction on your program: state the objectives
 and comment on how they are achieved. Further more, in the whole document,
@@ -56,11 +58,23 @@ in text. Additionally, discuss the principles behind the formula.}
 
 \section{Overall approach }
 
+\textbf{Yoeri}
+
 \emph{Give a full discussion of how you have followed the general
 set-up as given by the course material and how you have implemented
 your spell checker.}
 
 \section{Phrase generation and evaluation}
+
+\textbf{Daan}
+
+Phrase generation consists of 3 parts, executed for each word in the phrase:
+\begin{enumerate}
+\item Candidate words generation (using the confusion matrix to find likely typos)
+\item Calculating the probability of the occurrence of each of the candidate words
+\item Calculating the probability of the occurrence of the bigram ending with the candidate word
+\end{enumerate}
+We then multiply these probabilities to obtain the most likely word
 
 \emph{Give a full discussion of how you have implemented phrase generation
 and have the best candidate sentence is selected. In particular, describe
@@ -70,6 +84,8 @@ of smoothing you use and how you have implemented it.}
 
 \section{Results and evaluation}
 
+\textbf{Allebei}
+
 \emph{Provide an overall assessment of your programs. What type of
 errors is it good at to catch and repair, which type or errors are
 missed or wrongly repaired. Explain what could be done, in principle,
@@ -77,6 +93,8 @@ to improve your program. Discuss how you have calibrated the relevant
 parameters.}
 
 \section{Advanced enhancements}
+
+\textbf{Yoeri}
 
 \emph{Several extensions and enhancements of the basic set-up of the
 spell checker are possible. Describe explicitly what you have incorporated
@@ -92,9 +110,9 @@ a statement on the contributions of each of the authors.}
 \cline{2-4} 
 \multicolumn{1}{c|}{} & \textbf{implementation} & \textbf{documentation} & \textbf{total \#hours}\tabularnewline
 \hline 
-Author 1 & 60\% & 30\% & 30\tabularnewline
+Daan & 60\% & 40\% & 22\tabularnewline
 \hline 
-Author 2 & 40\% & 70\% & 25\tabularnewline
+Yoeri & 40\% & 60\% & 21\tabularnewline
 \hline 
 \end{tabular}
 \begin{itemize}

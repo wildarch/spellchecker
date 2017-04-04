@@ -28,9 +28,7 @@ public class SpellChecker {
     
     static void nonPeachTest(SpellCorrector sc) throws IOException { 
             String[] sentences = {
-                "at the hme locations there were traces of water",
-                "this assay allowed us to measure a wide variety of conditions",
-                "the development of diabetes is present in mice that carry a transgene"
+                "she still refers to me has a friend but i fel i am treated quite badly",
             };
             
             for(String sentence: sentences) {

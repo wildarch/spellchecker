@@ -177,7 +177,12 @@ public class CorpusReader
         String w = parts[1];
         
         smoothedCount += Math.max(getNGramCount(NGram) - DELTA, 0);
-        smoothedCount /= biGram1.get(v);
+        Integer x = biGram1.get(v);
+        if (x == null) {
+            System.err.println(v);
+            return 0;
+        }
+        smoothedCount /= x;
         smoothedCount += lambda(v) * unigramProbability(w);
         //System.out.println(smoothedCount);
         
@@ -186,7 +191,8 @@ public class CorpusReader
     
     private double lambda(String v) {
         int uniqueCombinations = biGram1.getOrDefault(v, 0);
-        return DELTA / biGram1.get(v) * uniqueCombinations;
+        Integer x = biGram1.get(v);
+        return DELTA / x * uniqueCombinations;
     }
     
     private double unigramProbability(String w) {

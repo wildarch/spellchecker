@@ -6,7 +6,7 @@ public class SpellCorrector {
     final private CorpusReader cr;
     final private ConfusionMatrixReader cmr;
     
-    final private static double NO_ERROR = 0.90;
+    final private static double NO_ERROR = 0.9;
     final private static double LAMBDA = 2.5;
     
     public SpellCorrector(CorpusReader cr, ConfusionMatrixReader cmr) 
@@ -25,33 +25,52 @@ public class SpellCorrector {
         String[] words = phrase.split(" ");
         String finalSuggestion = "";
         
-        // TODO    
-        //finalSuggestion = words[0] + " ";
-        for (int i = 0; i < words.length; i++) {
+        words = doPass(words, true);
+        //words = doPass(words, false);
+        for (String w : words) {
+            finalSuggestion += w + " ";
+        }
+        
+        return finalSuggestion.trim();
+    }
+
+    public String[] doPass(String[] words, boolean ltr) {
+        
+        int i = ltr ? 0 : words.length -1;
+        for (; i >= 0 && i < words.length; i+= ltr ? 1 : -1) {
+            boolean hasOther = ((i > 0 && ltr) || ((i < words.length-1) && !ltr));
+            String other = null;
             String word = words[i];
+            if (hasOther) {
+                other = ltr ? words[i-1] : words[i+1];
+            }
+
             Map<String,Double> candidates = getCandidateWords(word);
             if (cr.inVocabulary(word)) {
                 candidates.put(word, NO_ERROR);
             }
             for (Entry<String, Double> e : candidates.entrySet()) {
                 String candidate = e.getKey();
+                String combo = null;
+                if (hasOther) {
+                    combo = ltr ? other + " " + candidate : candidate + " " + other;
+                }
                 Probability p = new Probability(
                     candidate, 
                     e.getValue(), 
                     wordProbability(candidate), 
-                    (i > 0)? words[i-1] : null, 
-                    (i > 0)? cr.getSmoothedCount(words[i-1] + " " + candidate) : 1
+                    hasOther ? other : null, 
+                    hasOther ? cr.getSmoothedCount(combo) : 1
                 );
-                //if (!SpellChecker.inPeach) System.out.println(p + "Prob: " + p.probability(LAMBDA));
+                if (!SpellChecker.inPeach) System.out.println(p + "Prob: " + p.probability(LAMBDA));
                 e.setValue(p.probability(LAMBDA));
             }
             words[i] = candidates.entrySet().stream()
                 .max((o1, o2) -> o1.getValue().compareTo(o2.getValue()))
                 .get().getKey();
-            finalSuggestion += words[i] + " ";
         }
-        return finalSuggestion.trim();
-    }    
+        return words;
+    }
       
     /** returns a map with candidate words and their noisy channel probability. **/
     public Map<String,Double> getCandidateWords(String typo)
