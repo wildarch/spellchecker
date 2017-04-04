@@ -167,7 +167,7 @@ public class CorpusReader
     
     public double getSmoothedCount(String NGram)
     {
-        if(NGram == null || NGram.length() == 0 || !NGram.contains(" "))
+        if(NGram == null || NGram.length() == 0)
         {
             throw new IllegalArgumentException("NGram must be non-empty bigram.");
         }
@@ -185,15 +185,25 @@ public class CorpusReader
         String v = NGram.substring(0,space);
         String w = NGram.substring(space+1);
         
-        smoothedCount += Math.max(getNGramCount(NGram) - DELTA, 0);
-        Integer x = biGram1.get(v);
-        if (x == null) {
+        double a = Math.max(getNGramCount(NGram) - DELTA, 0);
+        smoothedCount += a;
+        
+        Integer biGramStartCount = biGram1.get(v);
+        if (biGramStartCount == null) {
             if (!inVocabulary(v)) {
                 throw new IllegalArgumentException("word " + v + "is not in the vocabularity");
             }
+            System.err.println("Smoothed count returns 0 for input "+NGram);
             return 0.0;
         }
-        smoothedCount /= x;        
+        smoothedCount /= biGramStartCount;
+        
+        double b = lambda(v) * getSmoothedCount(w);
+        smoothedCount += b;
+        
+        if (smoothedCount == 0.0) {
+            throw new IllegalArgumentException("smoothedCount 0 for "+NGram);
+        }
         return smoothedCount;
     }
     

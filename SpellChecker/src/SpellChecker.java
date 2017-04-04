@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 public class SpellChecker {
 
-    public static boolean inPeach = !true; // set this to true if you submit to peach!!!
+    public static boolean inPeach = false; // set this to true if you submit to peach!!!
     
     /**
      * @param args the command line arguments
@@ -29,7 +29,8 @@ public class SpellChecker {
     static void nonPeachTest(SpellCorrector sc) throws IOException { 
             String[] sentences = {
                 //"at the hme locations there were traces of water",
-                "she still refers to me has a friend but i fel i am treated quite badly",
+                //"she still refers to me has a friend but i fel i am treated quite badly",
+                "laying in the national footbal league was my dream",                
             };
             
             for(String sentence: sentences) {

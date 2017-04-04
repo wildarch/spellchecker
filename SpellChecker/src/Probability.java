@@ -11,23 +11,28 @@ public class Probability {
     public double typoProbability;
     public double wordProbability;
     public String previous;
-    public double smoothedCount;
+    public String next;
+    public double smoothedCountPrevious;
+    public double smoothedCountNext;
     
-    public Probability(String w, double tp, double wo, String p, double sc) {
+    public Probability(String w, double tp, double wo, String p, String n, double scp, double scn) {
         this.word = w;
         this.typoProbability = tp;
         this.wordProbability = wo;
         this.previous = p;
-        this.smoothedCount = sc;
+        this.next = n;
+        this.smoothedCountPrevious = scp;
+        this.smoothedCountNext = scn;
     }
     
     @Override
     public String toString() {
         Formatter f = new Formatter();
-        return f.format("%s: (typo: %f, word: %f, prev: %s, smoothedCount: %f)", word, typoProbability, wordProbability, previous, smoothedCount).toString();
+        return f.format("%s: (typo: %f, word: %f, prev: %s, next: %s, smoothedCountPrevious: %f, smoothedCountNext: %f)", word, typoProbability, wordProbability, previous, next, smoothedCountPrevious, smoothedCountNext).toString();
     }
     
     public double probability(double lambda) {
-        return typoProbability * Math.pow(wordProbability * smoothedCount, lambda);
+        //double kneserNey = smoothedCountPrevious
+        return typoProbability * Math.pow(wordProbability * smoothedCountPrevious * smoothedCountNext, lambda);
     }
 }

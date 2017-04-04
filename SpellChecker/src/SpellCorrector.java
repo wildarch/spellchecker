@@ -25,7 +25,7 @@ public class SpellCorrector {
         String[] words = phrase.split(" ");
         String finalSuggestion = "";
         
-        words = doPass(words, true);
+        words = doPass(words);
         //words = doPass(words, false);
         for (String w : words) {
             finalSuggestion += w + " ";
@@ -34,15 +34,20 @@ public class SpellCorrector {
         return finalSuggestion.trim();
     }
 
-    public String[] doPass(String[] words, boolean ltr) {
+    public String[] doPass(String[] words) {
         
-        int i = ltr ? 0 : words.length -1;
-        for (; i >= 0 && i < words.length; i+= ltr ? 1 : -1) {
-            boolean hasOther = ((i > 0 && ltr) || ((i < words.length-1) && !ltr));
-            String other = null;
+        for (int i = 0; i < words.length; i++) {
+            boolean hasPrevious = i > 0;
+            boolean hasNext = i < (words.length - 1);
+            
+            String previous = null;
+            String next = null;
             String word = words[i];
-            if (hasOther) {
-                other = ltr ? words[i-1] : words[i+1];
+            if (hasPrevious) {
+                previous = words[i-1];
+            }
+            if (hasNext) {
+                next = words[i+1];
             }
 
             Map<String,Double> candidates = getCandidateWords(word);
@@ -51,16 +56,22 @@ public class SpellCorrector {
             }
             for (Entry<String, Double> e : candidates.entrySet()) {
                 String candidate = e.getKey();
-                String combo = null;
-                if (hasOther) {
-                    combo = ltr ? other + " " + candidate : candidate + " " + other;
+                String comboPrevious = null;
+                String comboNext = null;
+                if (hasPrevious) {
+                    comboPrevious = previous + " " + candidate;
+                }
+                if (hasNext) {
+                    comboNext = candidate + " " + next;
                 }
                 Probability p = new Probability(
                     candidate, 
                     e.getValue(), 
                     cr.uniGramProbability(candidate), 
-                    hasOther ? other : null, 
-                    hasOther ? cr.getSmoothedCount(combo) : 1
+                    hasPrevious ? previous : null, 
+                    hasNext ? next : null, 
+                    hasPrevious ? cr.getSmoothedCount(comboPrevious) : 1,
+                    hasNext ? cr.getSmoothedCount(comboNext) : 1
                 );
                 if (!SpellChecker.inPeach) System.out.println(p + "Prob: " + p.probability(LAMBDA));
                 e.setValue(p.probability(LAMBDA));
