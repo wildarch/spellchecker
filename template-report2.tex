@@ -132,6 +132,12 @@ P = P(t|c) * P(w_c^i)^\lambda * P_{KN}(w_i|w_{i-1})
 \]
 Where $\lambda$ is a calibration parameter (set to 0.3 in our implementation).
 
+Note that in our implementation we have tweaked this formula to improve accuracy, that formula looks like:
+\[
+P = \frac{-1}{ln(P(t|c) * 0.8)} * P(w_c^i)^\lambda * P_{KN}(w_i|w_{i-1}) * P_{KN}(w_i-1|w_{i+1})
+\]
+This is explained in more detail in section \emph{5. Advanced enhancements}.
+
 
 \emph{Give a full discussion of how you have implemented phrase generation
 and have the best candidate sentence is selected. In particular, describe
