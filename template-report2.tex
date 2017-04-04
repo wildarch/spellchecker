@@ -9,6 +9,7 @@
 \usepackage{graphicx}
 \usepackage{listings}
 \renewcommand{\lstlistingname}{Listing}
+\usepackage{amsmath}
 
 \usepackage{float}
 \newfloat{algorithm}{tbp}{loa}
@@ -72,7 +73,7 @@ During phrase generation we find the best suggestion for a given phrase. A sugge
 We then combine these probabilities to obtain the most likely word. Stringing these together then yields the final suggestion for the correct phrase.
 
 \subsection{Candidate words generation}
-Candidate words are all words $w_c^i$ that have a Damerau-Levenshtein distance of exactly 1 from the word in the phrase ($w_p$), plus that word itself (because it might be correct). For each of these words we calculate $P(t|c)$, where $t \subseteq w_p \wedge c \subseteq w_c$, such that $t$ is a typo and should be replaced by $c$. For our purposes, we use:
+Candidate words are all words $w_c^i$ that have a Damerau-Levenshtein distance of exactly 1 from the word in the phrase ($w_p$), plus that word itself (because it might be correct) with a predefined probability for a typo (0.9 in our implementation). For each of these words we calculate $P(t|c)$, where $t \subseteq w_p \wedge c \subseteq w_c$, such that $t$ is a typo and should be replaced by $c$. For our purposes, we use:
 \[
 P(t|c) = \frac{confusionCount(t, c)}{biCharCount(t)}
 \]
@@ -88,15 +89,41 @@ We divide the number of times the candidate word occurs in corpus divided by the
 \subsection{Bigram probability}
 At this stage we calculate how likely the combination of the candidate word and the previous word is. To calculate the probability of the bigram we use Kneser-Ney smoothing:
 \[
-P_{KN}(w_i|w_{i-1}) = \frac{max(c(w_{i-1}, w_i) - \delta, 0)}{\sum_w' c(w_i-1, w')} + \lambda_{w_i-1} \cdot P_{KN}(w_i)
+P_{KN}(w_i|w_{i-1}) = \frac{max(c(w_{i-1}, w_i) - \delta, 0)}{\sum_w' c(w_{i-1}, w')} + \lambda_{w_{i-1}} \cdot P_{KN}(w_i)
 \]
-
-
-$P(t|c)$ and $P(w_c)$ together determine the noisy channel model probability $ncp$, defined as:
+Where for $w_{i-1}$:
 \[
-ncp(w_c) = P(t|c) \cdot P(w_c)^\lambda
+\lambda_{w_{i-1}} = \frac{\delta}{\sum_w' c(w_{i-1}, w')} |\{w': 0 < c(w_{i-1}, w'\}|
+\] 
+And for a unigram $w_i$:
+\[
+P_{KN}(w_i) = \frac{|\{w' : 0 < c(w', w_i)\}|}{|\{(w', w'') : 0 < c(w', w'')\}|}
 \]
-Here $\lambda$ is a calibration variable that we tuned by hand using the training set.
+
+In order to express this in java, we derive:
+\begin{align*}
+c(x,y) &= getNGramCount(x,y)\\
+\sum_w' c(w_{i-1}, w') &= biGram1Total.get(w_{i-1})\\
+|\{w': 0 < c(w_{i-1}, w'\}| &= biGram1.get(w_{i-1})\\
+|\{w' : 0 < c(w', w_i)\}| &= biGram2.get(w_i)\\
+|\{(w', w'') : 0 < c(w', w'')\}| &= biGramCount
+\end{align*}
+Where $biGram1Total$ is almost identical to $biGram1$, only the first increments using the count attached to each biGram. Or in java code:
+\begin{align*}
+biGram1&.put(w1, biGram1.getOrDefault(w1, 0)+1)\\
+biGram1Total&.put(w1, biGram1.getOrDefault(w1, 0)+count);
+\end{align*}
+
+Applying the appropriate substitutions yields a correct java implementation.
+
+\subsection{Combining}
+The probability of a typo $P(t|c)$ defines the noisy channel probability.
+Multiplying $P(w_c^i)$ and $P_{KN}(w_i|w_{i-1})$ yields the language model probability.
+To obtain the final probability we combine these two:
+\[
+P = P(t|c) * P(w_c^i)^\lambda * P_{KN}(w_i|w_{i-1})
+\]
+Where $\lambda$ is a calibration parameter (set to 0.3 in our implementation).
 
 
 \emph{Give a full discussion of how you have implemented phrase generation
