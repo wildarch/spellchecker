@@ -48,6 +48,10 @@ public class SpellCorrector {
             }
             if (hasNext) {
                 next = words[i+1];
+                if (!cr.inVocabulary(next)) {
+                    words[i] = word;
+                    continue;
+                }
             }
 
             Map<String,Double> candidates = getCandidateWords(word);

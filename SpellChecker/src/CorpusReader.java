@@ -198,8 +198,11 @@ public class CorpusReader
         }
         smoothedCount /= biGramStartCount;
         
-        double b = lambda(v) * getSmoothedCount(w);
-        smoothedCount += b;
+        //double b = lambda(v) * getSmoothedCount(w);
+        double l = lambda(v);
+        double c = getSmoothedCount(w);
+        if (c == 0) c = getSmoothedCount(v);
+        smoothedCount += l*c;
         
         if (smoothedCount == 0.0) {
             throw new IllegalArgumentException("smoothedCount 0 for "+NGram);
