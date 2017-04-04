@@ -1,8 +1,14 @@
 \begin{thebibliography}{1}
 
-\bibitem{Ertel:2011:IAI:1971988}
-Wolfgang Ertel.
-\newblock {\em Introduction to Artificial Intelligence}.
-\newblock Springer Publishing Company, Incorporated, 1st edition, 2011.
+\bibitem{NoisyChannelSource}
+Eric Brill and Robert~C. Moore.
+\newblock {\em An Improved Error Model for Noisy Channel Spelling Correction,
+  page 1-2}.
+\newblock Microsoft Research, 2000.
+
+\bibitem{BigramSource}
+Ted Dunning.
+\newblock {\em Statistical Identification of Language}.
+\newblock New Mexico State University, 1994.
 
 \end{thebibliography}

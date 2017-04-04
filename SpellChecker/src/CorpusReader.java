@@ -20,8 +20,7 @@ public class CorpusReader
     private int biGramCount;
     private HashMap<String,Integer> biGram2; // count 2nd word in biGram
     private HashMap<String,Integer> biGram1; // count first word in biGram
-    
-    private List<String[]> biGrams;
+    private HashMap<String,Integer> biGram1Total;
     
     private final static double DELTA = 0.75;
         
@@ -62,6 +61,7 @@ public class CorpusReader
         ngrams = new HashMap<>();
         biChars = new HashMap<>();
         biGram1 = new HashMap<>();
+        biGram1Total = new HashMap<>();
         biGram2 = new HashMap<>();
         corpusSize=0;
         biGramCount = 0;
@@ -88,6 +88,7 @@ public class CorpusReader
                     String w2 = s2.substring(space+1);
                     
                     biGram1.put(w1, biGram1.getOrDefault(w1, 0)+1);
+                    biGram1Total.put(w1, biGram1.getOrDefault(w1, 0)+count);
                     biGram2.put(w2, biGram2.getOrDefault(w2, 0)+1);
                     
                     biGramCount++;
@@ -165,6 +166,11 @@ public class CorpusReader
        return vocabulary.contains(word);
     }    
     
+    /**
+     * Calculates Kneser-Ney based NGram probability
+     * @param NGram
+     * @return probability for given NGram
+     */
     public double getSmoothedCount(String NGram)
     {
         if(NGram == null || NGram.length() == 0)
@@ -176,29 +182,42 @@ public class CorpusReader
         
         int space = NGram.indexOf(' ');
         if (space == -1) {
+            // Unigram probability
+            // \frac{|{w' : 0 < c(w', w_i)}|}{|{(w', w'') : 0 < c(w', w'')}|}
             return (double) biGram2.getOrDefault(NGram, 0) / biGramCount;
         }
-
+        
+        // Split the bigram
         String v = NGram.substring(0,space);
         String w = NGram.substring(space+1);
         
+        // max(c(w_{i-1}, w_i) - \delta, 0)
         smoothedCount += Math.max(getNGramCount(NGram) - DELTA, 0);
         
         Integer biGramStartCount = biGram1.get(v);
+        // If there is no bigram that starts with this unigram,
         if (biGramStartCount == null) {
+            // We do not consider this a possible correction
             return 0.0;
         }
-
+        
+        // \sum_w' c(w_i-1, w')
         smoothedCount /= biGramStartCount;
         
+        // \lambda_{w_i-1} \cdot P_{KN}(w_i)
         smoothedCount += lambda(v) * getSmoothedCount(w);
         
-        return smoothedCount * 1000;
+        return smoothedCount;
     }
     
+    /**
+     * Calculates an appropriate lambda value for a given unigram
+     * @param v
+     * @return lambda value
+     */
     private double lambda(String v) {
         int uniqueCombinations = biGram1.getOrDefault(v, 0);
-        Integer x = biGram1.get(v);
+        Integer x = biGram1Total.get(v);
         return DELTA / x * uniqueCombinations;
     }
 }
