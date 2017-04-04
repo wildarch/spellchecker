@@ -37,11 +37,12 @@
 In this project we explore the creation of a spell checker, used for correcting english sentences with at most 2 errors per sentence (and no consecutive incorrect words). We do this using an approach of natural language processing we were taught in this course: reasoning with probabilities about the words and sentences that have to be corrected. In this report we will describe how we approached the problem, how we tried to solve it, and why we solved it the way we did.
 
 \section{Overall approach }
-To correct a sentence, our approach was to go through all the words in the sentence and find the best possible word in this place. We do this by generating a candidate set of words: we create this by taking all words with a Levenshtein Distance of 1 (giving insertions, deletions and substitutions a weight of 1). If the word is also in the vocabulary (and thus a valid word), we also add this to the candidate set. We then check for the probability of the typo of every word in the candidate set (and a constant for no typos), how common the word is, and how well it fits by looking at its 'neighbour' words. This gives us the following algorithm:
+To correct a sentence, our approach was to go through all the words in the sentence and find the best possible word in this place. We did this using a combination of the noisy channel model\cite{NoisyChannelSource} and the Bigram model\cite{BigramSource}. \\ \\
+For every word in the sentence, we start by generating a candidate set of words for our current word: we create this by taking all words with a Damerau-Levenshtein Distance of 1 (so a single deletion, insertion, substitution or transpostion) to the current word. If the current word is also in the vocabulary (and thus a valid word), we also add this to the candidate set. We then check for the probability of the typo of every word in the candidate set (and a constant for no typos), how common the word is, and how well it fits by looking at its neighbouring words. This gives us the following algorithm:
 \begin{algorithm}[h]
 \begin{lstlisting}[language=Java,numbers=left,numberstyle={\footnotesize},stepnumber=2,basicstyle={\scriptsize},tabsize=4]
 String Spellchecker(phrase) {
-	String correctPhrase //the correct phrase
+	String correctPhrase; //the correct phrase
 	for (every word in phrase) {
 		candidateWords = words with Levenshtein Distance of 1 to word in vocabulary;
 		if (word is in vocabulary) {
@@ -51,7 +52,7 @@ String Spellchecker(phrase) {
 			candidateWord.probability = probability of typo * probability word occuring 
 										* probability of word occuring before/after its neighbours;
 		}
-		bestWord = word from candidateWords with the highest probability
+		bestWord = word from candidateWords with the highest probability;
 		add bestWord to correctPhrase;
 	}
 	return correctPhrase;
@@ -63,7 +64,6 @@ String Spellchecker(phrase) {
 \emph{Give a full discussion of how you have followed the general
 set-up as given by the course material and how you have implemented
 your spell checker.}
-
 \section{Phrase generation and evaluation}
 
 \textbf{Daan}
