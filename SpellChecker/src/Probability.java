@@ -3,8 +3,9 @@ import java.util.Formatter;
 
 
 /**
- *
- * @author daan
+ * Record class to hold all relevant data to calculate 
+ * a probability for a candidate word.
+ * @author Daan de Graaf
  */
 public class Probability {
     public String word;
@@ -28,7 +29,17 @@ public class Probability {
     @Override
     public String toString() {
         Formatter f = new Formatter();
-        return f.format("%s: (typo: %f, word: %f, prev: %s, next: %s, smoothedCountPrevious: %f, smoothedCountNext: %f)", word, (-1.0 / Math.log(typoProbability*0.8)), wordProbability, previous, next, smoothedCountPrevious, smoothedCountNext).toString();
+        return f.format(
+            "%s: (typo: %f, word: %f, prev: %s, next: %s, "
+                + "smoothedCountPrevious: %f, smoothedCountNext: %f)", 
+            word, 
+            (-1.0 / Math.log(typoProbability*0.8)), 
+            wordProbability, 
+            previous, 
+            next, 
+            smoothedCountPrevious, 
+            smoothedCountNext
+        ).toString();
     }
     
     public double probability(double lambda) {

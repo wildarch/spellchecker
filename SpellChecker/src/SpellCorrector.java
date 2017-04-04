@@ -26,7 +26,6 @@ public class SpellCorrector {
         String finalSuggestion = "";
         
         words = doPass(words);
-        //words = doPass(words, false);
         for (String w : words) {
             finalSuggestion += w + " ";
         }
@@ -37,7 +36,9 @@ public class SpellCorrector {
     public String[] doPass(String[] words) {
         
         for (int i = 0; i < words.length; i++) {
+            // The current word is not the first in the phrase
             boolean hasPrevious = i > 0;
+            // The current word is not the last in the phrase
             boolean hasNext = i < (words.length - 1);
             
             String previous = null;
@@ -48,21 +49,26 @@ public class SpellCorrector {
             }
             if (hasNext) {
                 next = words[i+1];
-                if (!cr.inVocabulary(next)) { //2 consecutive errors not allowed
+                if (!cr.inVocabulary(next)) { 
+                    // 2 consecutive errors not allowed, so this word is correct
                     words[i] = word;
                     continue;
                 }
             }
 
             Map<String,Double> candidates = getCandidateWords(word);
+            // If the word is in the vocabulary, it is also a option to consider
             if (cr.inVocabulary(word)) {
                 candidates.put(word, NO_ERROR);
             }
             for (Entry<String, Double> e : candidates.entrySet()) {
                 if (e.getValue() == 0.0) {
+                    // TODO Yoeri
                     e.setValue(0.00001);
                 }
                 String candidate = e.getKey();
+                // Holds the combination of this word with either 
+                // the previous or next word
                 String comboPrevious = null;
                 String comboNext = null;
                 if (hasPrevious) {
@@ -71,6 +77,9 @@ public class SpellCorrector {
                 if (hasNext) {
                     comboNext = candidate + " " + next;
                 }
+                
+                // Construct a probability record class to keep track of all relevant data
+                // This makes debugging much simpler
                 Probability p = new Probability(
                     candidate, 
                     e.getValue(), 
@@ -83,6 +92,8 @@ public class SpellCorrector {
                 if (!SpellChecker.inPeach) System.out.println(p + "Prob: " + p.probability(LAMBDA));
                 e.setValue(p.probability(LAMBDA));
             }
+            
+            // Get the word with the highest total probability
             words[i] = candidates.entrySet().stream()
                 .max((o1, o2) -> o1.getValue().compareTo(o2.getValue()))
                 .get().getKey();
