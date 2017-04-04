@@ -37,6 +37,11 @@ public class CorpusReader
         return biChars.getOrDefault(xy, 0);
     }
     
+    @Deprecated
+    public double uniGramProbability(String w) {
+        return (double) getNGramCount(w) / corpusSize;
+    }
+    
     /**
      * Returns the n-gram count of <NGram> in the corpus
      * 

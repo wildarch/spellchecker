@@ -58,7 +58,7 @@ public class SpellCorrector {
                 Probability p = new Probability(
                     candidate, 
                     e.getValue(), 
-                    wordProbability(candidate), 
+                    cr.uniGramProbability(candidate), 
                     hasOther ? other : null, 
                     hasOther ? cr.getSmoothedCount(combo) : 1
                 );
@@ -76,9 +76,5 @@ public class SpellCorrector {
     public Map<String,Double> getCandidateWords(String typo)
     {
         return new WordGenerator(cr,cmr).getCandidateCorrections(typo);
-    }
-    
-    private double wordProbability(String word) {
-        return (cr.getNGramCount(word)+1) * LAMBDA;
     }
 }

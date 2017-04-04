@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 public class SpellChecker {
 
-    public static boolean inPeach = true; // set this to true if you submit to peach!!!
+    public static boolean inPeach = !true; // set this to true if you submit to peach!!!
     
     /**
      * @param args the command line arguments

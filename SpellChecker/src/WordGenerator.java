@@ -27,7 +27,7 @@ public class WordGenerator {
             return 0;
         }
         
-        return cfc / (double) cr.BiCharCount(c);
+        return cfc / (double) cr.BiCharCount(t);
     }
     
     protected void addInsertions(HashMap<String, Double> result, String typo) {

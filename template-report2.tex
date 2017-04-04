@@ -27,34 +27,7 @@
 
 \section{Introduction}
 
-\textbf{Yoeri}
-
-\emph{Give a short introduction on your program: state the objectives
-and comment on how they are achieved. Further more, in the whole document,
-please take care of the following:}
-\begin{itemize}
-\item \emph{Refer to any material you used to obtain your results}, e.g.
-\cite{Ertel:2011:IAI:1971988}\emph{.}
-\item \emph{Illustrate your material with appropriate figures which are
-numbered and have a descriptive caption. Refer to the figure in the
-text: see }Figure \ref{fig:DanJurafsky}\emph{.}
-\begin{figure}[bh]
-\begin{centering}
-\includegraphics[scale=0.1]{DanJurafsky}
-\par\end{centering}
-\emph{\caption{\label{fig:DanJurafsky}The author of the book we used for background
-information.}
-}
-
-\end{figure}
-\item \emph{Use pseudo-code to explain your algorithms. Note that pseudo-code
-is not the same as your actual java code. It should be an abstraction
-of that code and should be presented with readability and clarity
-in mind. Pseudo-code has to be accompanied with proper explanation
-and argumentation.}
-\item \emph{Use numbered mathematical formulas instead of lengthy explanations
-in text. Additionally, discuss the principles behind the formula.}
-\end{itemize}
+In this project we explore the creation of a spell checker, used for correcting english sentences with at most 2 errors per sentence (and no consecutive incorrect words). We do this using an approach of natural language processing we were taught in this course: reasoning with probabilities about the words and sentences that have to be corrected. In this report we will describe how we approached the problem, how we tried to solve it, and why we solved it the way we did.
 
 \section{Overall approach }
 
@@ -68,17 +41,37 @@ your spell checker.}
 
 \textbf{Daan}
 
-Phrase generation consists of 3 parts, executed for each word in the phrase:
+During phrase generation we find the best suggestion for a given phrase. A suggestion is generated word by word from left to right, using the previous word in the phrase if available to create bi-grams. For each word in the phrase we calculate the probability that it is the correct suggestion. This probability is calculated in three stages:
 \begin{enumerate}
 \item Candidate words generation (using the confusion matrix to find likely typos)
 \item Calculating the probability of the occurrence of each of the candidate words
-\item Calculating the probability of the occurrence of the bigram ending with the candidate word
+\item Calculating the probability of the occurrence of the bi-gram ending with the candidate word
 \end{enumerate}
-We then multiply these probabilities to obtain the most likely word
+We then combine these probabilities to obtain the most likely word. Stringing these together then yields the final suggestion for the correct phrase.
+
+\subsection{Candidate words generation}
+Candidate words are all words $w_c^i$ that have a Damerau-Levenshtein distance of exactly 1 from the word in the phrase ($w_p$), plus that word itself (because it might be correct). For each of these words we calculate $P(t|c)$, where $t \subseteq w_p \wedge c \subseteq w_c$, such that $t$ is a typo and should be replaced by $c$. For our purposes, we use:
+\[
+P(t|c) = \frac{confusionCount(t, c)}{biCharCount(t)}
+\]
+Here $confusionCount(t, c)$ is the number of times that $t$ is a typo and $c$ was intended, according to the confusion matrix. $biCharCount(t)$ is the number of times that the biChar $t$ occurs in the corpus. The intuition behind this formula is that it calculates how often $t$ should be changed out of all the times it occurs.
+
+\subsection{Unigram occurrence probability}
+We now calculate the probability of occurrence of each candidate word using the number of times it occurs in the corpus:
+\[
+P(w_c) = \frac{NGramCount(w_c)}{corpusSize}
+\]
+We divide the number of times the candidate word occurs in corpus divided by the total number of words in the corpus. This measures how common a word is. 
+
+$P(t|c)$ and $P(w_c)$ together determine the noisy channel model probability $ncp$, defined as:
+\[
+ncp(w_c) = P(t|c) \cdot P(w_c)^\lambda
+\]
+
 
 \emph{Give a full discussion of how you have implemented phrase generation
 and have the best candidate sentence is selected. In particular, describe
-what rule the confusion matrices and bigrams play a role in attaching
+what rule the confusion matrices and bi-grams play a role in attaching
 a value/probability to a candidate sentence. Also describe what type
 of smoothing you use and how you have implemented it.}
 
