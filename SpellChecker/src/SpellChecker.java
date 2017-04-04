@@ -29,8 +29,8 @@ public class SpellChecker {
     static void nonPeachTest(SpellCorrector sc) throws IOException { 
             String[] sentences = {
                 //"at the hme locations there were traces of water",
-                "laying in the national footbal league was my dream",
                 //"she still refers to me has a friend but i fel i am treated quite badly",
+                "laying in the national footbal league was my dream",                
             };
             
             for(String sentence: sentences) {

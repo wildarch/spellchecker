@@ -3,7 +3,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -168,7 +167,7 @@ public class CorpusReader
     
     public double getSmoothedCount(String NGram)
     {
-        if(NGram == null || NGram.length() == 0 || !NGram.contains(" "))
+        if(NGram == null || NGram.length() == 0)
         {
             throw new IllegalArgumentException("NGram must be non-empty bigram.");
         }
@@ -177,32 +176,43 @@ public class CorpusReader
         
         // Add one smoothing
         //smoothedCount = getNGramCount(NGram) + 1;
-        String[] parts = NGram.split(" ");
-        String v = parts[0];
-        String w = parts[1];
         
-        smoothedCount += Math.max(getNGramCount(NGram) - DELTA, 0);
-        Integer x = biGram1.get(v);
-        if (x == null) {
-            System.err.println(v);
-            return 0;
+        int space = NGram.indexOf(' ');
+        if (space == -1) {
+            return (double) biGram2.getOrDefault(NGram, 0) / biGramCount;
         }
-        smoothedCount /= x;
-        smoothedCount += lambda(v) * unigramProbability(w);
-        //System.out.println(smoothedCount);
+
+        String v = NGram.substring(0,space);
+        String w = NGram.substring(space+1);
         
-        return smoothedCount * 1000;
+        double a = Math.max(getNGramCount(NGram) - DELTA, 0);
+        smoothedCount += a;
+        
+        Integer biGramStartCount = biGram1.get(v);
+        if (biGramStartCount == null) {
+            if (!inVocabulary(v)) {
+                throw new IllegalArgumentException("word " + v + "is not in the vocabularity");
+            }
+            System.err.println("Smoothed count returns 0 for input "+NGram);
+            return 0.0;
+        }
+        smoothedCount /= biGramStartCount;
+        
+        //double b = lambda(v) * getSmoothedCount(w);
+        double l = lambda(v);
+        double c = getSmoothedCount(w);
+        if (c == 0) c = getSmoothedCount(v);
+        smoothedCount += l*c;
+        
+        if (smoothedCount == 0.0) {
+            throw new IllegalArgumentException("smoothedCount 0 for "+NGram);
+        }
+        return smoothedCount;
     }
     
     private double lambda(String v) {
         int uniqueCombinations = biGram1.getOrDefault(v, 0);
         Integer x = biGram1.get(v);
         return DELTA / x * uniqueCombinations;
-    }
-    
-    private double unigramProbability(String w) {
-        int totalUniqueBiGrams = biGramCount;
-        int uniqueBiGrams = biGram2.getOrDefault(w, 0);
-        return (double) uniqueBiGrams / totalUniqueBiGrams;
     }
 }

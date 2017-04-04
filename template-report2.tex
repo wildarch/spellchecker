@@ -36,9 +36,14 @@
 
 In this project we explore the creation of a spell checker, used for correcting english sentences with at most 2 errors per sentence (and no consecutive incorrect words). We do this using an approach of natural language processing we were taught in this course: reasoning with probabilities about the words and sentences that have to be corrected. In this report we will describe how we approached the problem, how we tried to solve it, and why we solved it the way we did.
 
+<<<<<<< HEAD
+\section{Overall approach}
+To correct a sentence, our approach was to go through all the words in the sentence and find the best possible word in this place. We do this by generating a candidate set of words: we create this by taking all words with a Levenshtein Distance of 1 (giving insertions, deletions and substitutions a weight of 1). If the word is also in the vocabulary (and thus a valid word), we also add this to the candidate set. We then check for the probability of the typo of every word in the candidate set (and a constant for no typos), how common the word is, and how well it fits by looking at its 'neighbour' words. This gives us the following algorithm:
+=======
 \section{Overall approach }
 To correct a sentence, our approach was to go through all the words in the sentence and find the best possible word in this place. We did this using a combination of the noisy channel model\cite{NoisyChannelSource} and the Bigram model\cite{BigramSource}. \\ \\
 For every word in the sentence, we start by generating a candidate set of words for our current word: we create this by taking all words with a Damerau-Levenshtein Distance of 1 (so a single deletion, insertion, substitution or transpostion) to the current word. If the current word is also in the vocabulary (and thus a valid word), we also add this to the candidate set. We then check for the probability of the typo of every word in the candidate set (and a constant for no typos), how common the word is, and how well it fits by looking at its neighbouring words. This gives us the following algorithm:
+>>>>>>> 3c7ede4e764cbd534c5b3994f717a998135f911d
 \begin{algorithm}[h]
 \begin{lstlisting}[language=Java,numbers=left,numberstyle={\footnotesize},stepnumber=2,basicstyle={\scriptsize},tabsize=4]
 String Spellchecker(phrase) {
@@ -61,12 +66,14 @@ String Spellchecker(phrase) {
 \caption{\label{alg:OverallApproach}Overall Approach}
 \end{algorithm}
 
+<<<<<<< HEAD
+
+=======
 \emph{Give a full discussion of how you have followed the general
 set-up as given by the course material and how you have implemented
 your spell checker.}
+>>>>>>> 3c7ede4e764cbd534c5b3994f717a998135f911d
 \section{Phrase generation and evaluation}
-
-\textbf{Daan}
 
 During phrase generation we find the best suggestion for a given phrase. A suggestion is generated word by word from left to right, using the previous word in the phrase if available to create bi-grams. For each word in the phrase we calculate the probability that it is the correct suggestion. This probability is calculated in three stages:
 \begin{enumerate}
@@ -90,13 +97,18 @@ P(w_c) = \frac{NGramCount(w_c)}{corpusSize}
 \]
 We divide the number of times the candidate word occurs in corpus divided by the total number of words in the corpus. This measures how common a word is. 
 
+\subsection{Bigram probability}
+At this stage we calculate how likely the combination of the candidate word and the previous word is. To calculate the probability of the bigram we use Kneser-Ney smoothing:
+\[
+P_{KN}(w_i|w_{i-1}) = \frac{max(c(w_{i-1}, w_i) - \delta, 0)}{\sum_w' c(w_i-1, w')}
+\]
+
+
 $P(t|c)$ and $P(w_c)$ together determine the noisy channel model probability $ncp$, defined as:
 \[
 ncp(w_c) = P(t|c) \cdot P(w_c)^\lambda
 \]
 Here $\lambda$ is a calibration variable that we tuned by hand using the training set.
-
-\subsection{}
 
 
 \emph{Give a full discussion of how you have implemented phrase generation
