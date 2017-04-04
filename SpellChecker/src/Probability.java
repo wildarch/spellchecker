@@ -42,6 +42,7 @@ public class Probability {
         ).toString();
     }
     
+    //calculates and returns total probability for a word
     public double probability(double lambda) {
         return (-1.0 / Math.log(typoProbability*0.8)) * Math.pow(wordProbability, lambda) * smoothedCountPrevious * smoothedCountNext;
     }

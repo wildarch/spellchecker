@@ -38,7 +38,7 @@ In this project we explore the creation of a spell checker, used for correcting 
 
 \section{Overall approach}
 To correct a sentence, our approach was to go through all the words in the sentence and find the best possible word in this place. We did this using a combination of the noisy channel model\cite{NoisyChannelSource} and the Bigram model\cite{BigramSource}. \\ \\
-For every word in the sentence, we start by generating a candidate set of words for our current word: we create this by taking all words with a Damerau-Levenshtein Distance of 1 (so a single deletion, insertion, substitution or transpostion) to the current word. If the current word is also in the vocabulary (and thus a valid word), we also add this to the candidate set. We then check for the probability of the typo of every word in the candidate set (and a constant NO\_ERROR for no typos), how common the word is (which will be taken to the power of constant LAMBDA to give it a weight), and how well it fits by looking at its neighbouring words (which will be smoothed out: this will be explained in section 3). The following is a simple version of our algorithm:
+For every word in the sentence, we start by generating a candidate set of words for our current word: we create this by taking all words with a Damerau-Levenshtein Distance of 1 (so a single deletion, insertion, substitution or transpostion) to the current word. If the current word is also in the vocabulary (and thus a valid word), we also add this to the candidate set. We then check for the probability of the typo of every word in the candidate set (and a constant NO\_ERROR for no typos), how common the word is (which will be taken to the power of constant LAMBDA to weight it), and how well it fits by looking at its neighbouring words (the word left and right of the current word. These probabilities will be smoothed out: this will be explained in section 3). The following is a simple version of our algorithm:
 \begin{algorithm}[h]
 	\begin{lstlisting}[language=Java,numbers=left,numberstyle={\footnotesize},stepnumber=2,basicstyle={\scriptsize},tabsize=4, keywords={word,continue}]
 String Spellchecker(phrase) {
@@ -75,7 +75,7 @@ During phrase generation we find the best suggestion for a given phrase. A sugge
 We then combine these probabilities to obtain the most likely word. Stringing these together then yields the final suggestion for the correct phrase.
 
 \subsection{Candidate words generation}
-Candidate words are all words $w_c^i$ that have a Damerau-Levenshtein distance of exactly 1 from the word in the phrase ($w_p$), plus that word itself (because it might be correct) with a predefined probability for a typo (0.9 in our implementation). For each of these words we calculate $P(t|c)$, where $t \subseteq w_p \wedge c \subseteq w_c$, such that $t$ is a typo and should be replaced by $c$. For our purposes, we use:
+Candidate words are all words $w_c^i$ that have a Damerau-Levenshtein distance of exactly 1 from the word in the phrase ($w_p$), plus that word itself (because it might be correct) with a predefined probability for a typo (0.8 in our implementation: more about that in section 4). For each of these words we calculate $P(t|c)$, where $t \subseteq w_p \wedge c \subseteq w_c$, such that $t$ is a typo and should be replaced by $c$. For our purposes, we use:
 \[
 P(t|c) = \frac{confusionCount(t, c)}{biCharCount(t)}
 \]
@@ -116,8 +116,8 @@ biGram1&.put(w1, biGram1.getOrDefault(w1, 0)+1)\\
 biGram1Total&.put(w1, biGram1.getOrDefault(w1, 0)+count);
 \end{align*}
 
-Applying the appropriate substitutions yields a correct java implementation.
-
+Applying the appropriate substitutions yields a correct java implementation.\\ \\
+Note that we describe the implementation for checking the word $w_{i}$ given its left neighbour $w_{i-1}$. We also check for its right neighbour $w_{i+1}$ given the word $w_{i}$ in a similar way.
 \subsection{Combining}
 The probability of a typo $P(t|c)$ defines the noisy channel probability.
 Multiplying $P(w_c^i)$ and $P_{KN}(w_i|w_{i-1})$ yields the language model probability.
@@ -129,7 +129,7 @@ Where $\lambda$ is a calibration parameter (set to 0.3 in our implementation).
 
 Note that in our implementation we have tweaked this formula to improve accuracy, that formula looks like:
 \[
-P = \frac{-1}{ln(P(t|c) * 0.8)} * P(w_c^i)^\lambda * P_{KN}(w_i|w_{i-1}) * P_{KN}(w_i-1|w_{i+1})
+P = \frac{-1}{ln(P(t|c) * 0.8)} * P(w_c^i)^\lambda * P_{KN}(w_i|w_{i-1}) * P_{KN}(w_{i+1}|w_{i})
 \]
 This is explained in more detail in section \emph{5. Advanced enhancements}.
 
@@ -141,7 +141,7 @@ The two failed test cases for the training set are the following:
 	\item "\textbf{laying} in the national footbal league was my dream" is unchanged by the spellchecker, where it should have corrected "laying" to  "playing". But also in this case a higher order ngrams or semantic analysis would be necessary. "laying in" is a very common bigram, so there is no reason for the spell checker to correct this.
 \end{enumerate}
 Given how  hard it is to correct these errors, we are very satisfied with the performance of our spellchecker.\\ \\
-Finally, to calibrate our parameters, we tested the program on a lot of different sentences and checked for incorrect words. We would then make the program print out elaborate information about how the 'incorrect' word was selected (so its type probability, word occurence, bigram with left neighbour, bigram with right neighbour, and combined probability). We used this information to see which parts of the probability calculation were weighed either too much or too little. We then tried out various different parameters for both NO\_ERROR and LAMBDA, in order to get probability variations which made more sense to us, and lead to a better correction rate. After lots of testing and iterating we ended up with the value of 0.8 for NO\_ERROR, and 0.3 for LAMBDA.
+For calibrating our parameters, we tested the program on a lot of different sentences and checked for incorrect words. We would then make the program print out elaborate information about how the incorrect word was selected (so its typo probability, word occurence, bigram with left neighbour, bigram with right neighbour, and combined probability). We used this information to see which parts of the probability calculation were weighed either too much or too little. We then tried out various different parameters for both NO\_ERROR and LAMBDA, in order to get probability variations which made more sense to us, and lead to a better correction rate. After testing and iterating we ended up with the value of 0.8 for NO\_ERROR, and 0.3 for LAMBDA.
 
 
 \section{Advanced enhancements}

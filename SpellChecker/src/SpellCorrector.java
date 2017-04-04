@@ -57,13 +57,15 @@ public class SpellCorrector {
             }
 
             Map<String,Double> candidates = getCandidateWords(word);
-            // If the word is in the vocabulary, it is also a option to consider
+            // If the word is in the vocabulary, it is also an option to consider
             if (cr.inVocabulary(word)) {
                 candidates.put(word, NO_ERROR);
             }
             for (Entry<String, Double> e : candidates.entrySet()) {
                 if (e.getValue() == 0.0) {
-                    // TODO Yoeri
+                    //if the typo probability is 0, set it to an extremely small value
+                    //since it can still be the correct word (0 makes the total probability 0)
+                    ///having a typo probability of 0 does not ensure it cannot be correct
                     e.setValue(0.00001);
                 }
                 String candidate = e.getKey();

@@ -30,12 +30,10 @@ public class CorpusReader
         readVocabulary();
     }
     
-    @Deprecated
     public int BiCharCount(String xy) {
         return biChars.getOrDefault(xy, 0);
     }
     
-    @Deprecated
     public double uniGramProbability(String w) {
         return (double) getNGramCount(w) / corpusSize;
     }
